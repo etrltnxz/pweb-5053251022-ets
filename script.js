@@ -119,7 +119,17 @@ function render() {
     del.dataset.action = "delete";
     del.setAttribute("aria-label", "Hapus tagihan");
     del.textContent = "✕";
+    const sum = (status) =>
+      transactions
+        .filter((t) => t.status === status)
+        .reduce((s, t) => s + (t.amount || 0), 0);
 
+    const income = sum("paid");       
+    const receivable = sum("unpaid"); 
+
+  document.getElementById("income").textContent = rupiah(income);
+  document.getElementById("receivable").textContent = rupiah(receivable);
+  document.getElementById("balance").textContent = rupiah(income);
     actions.append(toggle, del);
     right.append(amount, badge, actions);
 
