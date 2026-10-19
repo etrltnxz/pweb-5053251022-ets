@@ -10,7 +10,7 @@ function load() {
         if (t.status === "paid" || t.status === "unpaid") return t;
         if (t.type === "income") return { ...t, status: "paid" };
         if (t.type === "unpaid") return { ...t, status: "unpaid" };
-        return null; 
+        return null;
       })
       .filter((t) => t && t.date && t.amount)
       .map((t) => ({
@@ -33,6 +33,7 @@ const list = document.getElementById("list");
 const emptyMsg = document.getElementById("empty");
 const filters = document.getElementById("filters");
 const dateInput = document.getElementById("date");
+const errorsBox = document.getElementById("errors");
 
 const rupiah = (n) => "Rp " + n.toLocaleString("id-ID");
 
@@ -56,6 +57,18 @@ function formatDate(iso) {
 }
 
 function render() {
+  const sum = (status) =>
+    transactions
+      .filter((t) => t.status === status)
+      .reduce((s, t) => s + (t.amount || 0), 0);
+
+  const income = sum("paid");
+  const receivable = sum("unpaid");
+
+  document.getElementById("income").textContent = rupiah(income);
+  document.getElementById("receivable").textContent = rupiah(receivable);
+  document.getElementById("balance").textContent = rupiah(income);
+
   filters.querySelectorAll("button").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.filter === activeFilter);
   });
@@ -119,17 +132,7 @@ function render() {
     del.dataset.action = "delete";
     del.setAttribute("aria-label", "Hapus tagihan");
     del.textContent = "✕";
-    const sum = (status) =>
-      transactions
-        .filter((t) => t.status === status)
-        .reduce((s, t) => s + (t.amount || 0), 0);
 
-    const income = sum("paid");       
-    const receivable = sum("unpaid"); 
-
-  document.getElementById("income").textContent = rupiah(income);
-  document.getElementById("receivable").textContent = rupiah(receivable);
-  document.getElementById("balance").textContent = rupiah(income);
     actions.append(toggle, del);
     right.append(amount, badge, actions);
 
@@ -138,9 +141,51 @@ function render() {
   });
 }
 
+function validate() {
+  const errors = [];
+  const fields = {
+    client: document.getElementById("client"),
+    project: document.getElementById("project"),
+    date: dateInput,
+    amount: document.getElementById("amount"),
+  };
+
+  Object.values(fields).forEach((el) => el.classList.remove("invalid"));
+
+  const fail = (field, message) => {
+    fields[field].classList.add("invalid");
+    errors.push(message);
+  };
+
+  if (!fields.client.value.trim()) fail("client", "Nama klien wajib diisi.");
+  if (!fields.project.value.trim()) fail("project", "Nama proyek wajib diisi.");
+  if (!fields.date.value) fail("date", "Tanggal tagihan wajib diisi.");
+
+  if (fields.amount.value === "") {
+    fail("amount", "Nominal wajib diisi.");
+  } else if (Number(fields.amount.value) <= 0) {
+    fail("amount", "Nominal harus lebih dari 0.");
+  }
+
+  return errors;
+}
+
+function showErrors(errors) {
+  errorsBox.innerHTML = "";
+  errors.forEach((msg) => {
+    const li = document.createElement("li");
+    li.textContent = msg;
+    errorsBox.appendChild(li);
+  });
+  errorsBox.hidden = errors.length === 0;
+}
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+
+  const errors = validate();
+  showErrors(errors);
+  if (errors.length > 0) return;
 
   const status = document.getElementById("status").value;
   const date = dateInput.value;
@@ -161,6 +206,10 @@ form.addEventListener("submit", (e) => {
   form.reset();
   dateInput.value = today();
   render();
+});
+
+form.addEventListener("input", (e) => {
+  e.target.classList.remove("invalid");
 });
 
 list.addEventListener("click", (e) => {

@@ -68,3 +68,5 @@ AI-LOG
       document.getElementById("income").textContent = rupiah(income);
       document.getElementById("receivable").textContent = rupiah(receivable);
       document.getElementById("balance").textContent = rupiah(income);
+
+      

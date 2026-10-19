@@ -7,7 +7,7 @@
   --paid: #1f8a5b;
   --unpaid: #b45309;
   --danger: #950f06;
-  --accent: #2b5f8e;
+  --accent: #044b63;
 }
 
 * { box-sizing: border-box; margin: 0; }
@@ -20,7 +20,7 @@ body {
 }
 
 .app { max-width: 560px; margin: 0 auto; display: grid; gap: 20px; }
-h1 { font-size: 1.6rem; }
+h1 { font-size: 1.6rem; color: #fff; }
 
 .summary { background: var(--accent); color: #fff; border-radius: 16px; padding: 24px; display: grid; gap: 20px; }
 .balance span, .flow span { display: block; font-size: .85rem; opacity: .8; }
@@ -28,6 +28,7 @@ h1 { font-size: 1.6rem; }
 .flow { display: flex; gap: 16px; }
 .flow > div { flex: 1; background: rgba(0, 0, 0, 0.12); border-radius: 10px; padding: 12px; }
 .flow strong { font-size: 1.05rem; }
+
 .form {
   background: var(--card);
   border: 1px solid var(--line);
@@ -36,7 +37,6 @@ h1 { font-size: 1.6rem; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-
 }
 .form .full { grid-column: 1 / -1; }
 
@@ -59,6 +59,25 @@ button { font: inherit; cursor: pointer; }
 input:focus-visible, select:focus-visible, button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+.errors {
+  list-style: none;
+  padding: 10px 14px;
+  background: #fdecea;
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  color: var(--danger);
+  font-size: .9rem;
+  display: grid;
+  gap: 2px;
+}
+.errors[hidden] { display: none; }
+.errors li::before { content: "• "; }
+
+input.invalid {
+  border-color: var(--danger);
+  background: #fff6f5;
 }
 
 .filters { display: flex; gap: 8px; }
@@ -118,16 +137,16 @@ input:focus-visible, select:focus-visible, button:focus-visible {
 .item .del { background: none; border: 0; color: var(--muted); font-size: 1.1rem; }
 .item .del:hover { color: var(--danger); }
 
-.empty { color: var(--muted); text-align: center; padding: 16px; }
+.empty { color: #c5d3e3; text-align: center; padding: 16px; }
 
 .clear {
   background: none;
-  border: 1px solid var(--danger);
-  color: var(--danger);
+  border: 1px solid #ff8a80;
+  color: #ff8a80;
   border-radius: 8px;
   padding: 10px;
 }
-.clear:hover { background: var(--danger); color: #fff; }
+.clear:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
 
 @media (max-width: 420px) {
   .form { grid-template-columns: 1fr; }
